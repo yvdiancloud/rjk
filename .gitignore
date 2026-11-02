@@ -1,0 +1,10 @@
+.cache/
+cloudflared.exe
+*.log
+node_modules/
+dist/
+native/stage/
+settings.json
+server-tunnel-ed25519
+server-tunnel-ed25519.*
+*.tmp

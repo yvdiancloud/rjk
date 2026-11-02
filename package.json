@@ -1,0 +1,19 @@
+{
+  "name": "local-mcp-studio",
+  "productName": "Local MCP Studio",
+  "version": "0.1.14",
+  "private": true,
+  "description": "Connect a selected Windows project to ChatGPT with a protected local MCP bridge.",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node src/main.js",
+    "build:win": "powershell -NoProfile -ExecutionPolicy Bypass -File native/build.ps1",
+    "pack:source": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/pack-source.ps1"
+  },
+  "engines": {
+    "node": "^22.23.4 || ^24.22.1 || >=26.12.1"
+  },
+  "dependencies": {
+    "ssh2": "^1.17.0"
+  }
+}

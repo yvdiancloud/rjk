@@ -1,0 +1,26 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "dev-6ae6fa9f4ca88191ad9b7e94e92a179c",
+  "version": "1.0.1",
+  "description": "mymcp",
+  "author": {
+    "name": "App developer"
+  },
+  "extensions": {
+    "com.openai": {
+      "apps": "./.app.json",
+      "interface": {
+        "capabilities": [],
+        "category": "Other",
+        "defaultPrompt": null,
+        "developerName": "App developer",
+        "displayName": "mymcp",
+        "longDescription": "mymcp",
+        "shortDescription": "mymcp",
+        "logo": "assets/lilac-bunny.svg",
+        "composerIcon": "assets/lilac-bunny.svg",
+        "brandColor": "#EEE8FA"
+      }
+    }
+  }
+}

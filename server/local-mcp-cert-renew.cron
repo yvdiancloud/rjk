@@ -1,0 +1,3 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+17 3 * * * root /usr/local/bin/local-mcp-cert-renew >/var/log/local-mcp-studio/cert-renew.log 2>&1

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f4f1">
+  <title>Local MCP Studio · 本地项目桥接</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <img class="brand-icon" src="/lilac-bunny.svg" alt="" aria-hidden="true">
+        <div class="brand-copy"><h1>Local MCP Studio</h1><p>本地项目桥接</p></div>
+      </div>
+      <div class="status" aria-live="polite"><i id="statusDot"></i><span id="statusText">本机待连接</span></div>
+    </header>
+
+    <section class="intro">
+      <div class="hero-copy">
+        <div class="eyebrow"><span></span> LOCAL MCP · WINDOWS</div>
+        <h2>让 ChatGPT<br><em>走进你的项目。</em></h2>
+        <p>选择一个本地目录，安全地连接文件、Git 与开发工具。</p>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="bunny-wash"></div>
+        <span class="hero-flower flower-one"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#flower"></use></svg></span>
+        <span class="hero-flower flower-two"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#flower"></use></svg></span>
+        <span class="hero-heart"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#heart"></use></svg></span>
+        <img class="hero-bunny" src="/lilac-bunny.svg" alt="">
+      </div>
+    </section>
+
+    <div class="content-grid">
+      <div class="main-column">
+        <section class="card project-card">
+          <div class="section-head">
+            <div class="step-number">01</div>
+            <div><h3>选择项目目录</h3><p>只开放这个文件夹给本次 MCP 会话</p></div>
+          </div>
+          <div class="path-row">
+            <span class="field-icon" aria-hidden="true"><svg class="ui-icon"><use href="/icons.svg#folder"></use></svg></span>
+            <input id="projectRoot" type="text" placeholder="选择一个项目文件夹…" spellcheck="false" autocomplete="off" aria-label="项目文件夹路径">
+            <button class="btn secondary" id="pickBtn"><svg class="ui-icon button-icon" aria-hidden="true"><use href="/icons.svg#folder-plus"></use></svg>浏览文件夹</button>
+          </div>
+          <div class="path-note"><svg class="ui-icon note-check" aria-hidden="true"><use href="/icons.svg#check"></use></svg>路径设置保留在本机。文件内容只会在工具调用时传输。</div>
+        </section>
+
+        <section class="card permission-card">
+          <div class="section-head">
+            <div class="step-number">02</div>
+            <div><h3>设置会话权限</h3><p>按任务需要选择开放给 ChatGPT 的工具</p></div>
+          </div>
+          <div class="permission-list">
+            <label class="permission">
+              <input type="radio" name="permission" value="read">
+              <span class="radio-mark"></span><span class="permission-symbol read-symbol"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#search"></use></svg></span>
+              <span class="permission-copy"><b>只读审阅</b><small>读取、搜索与查看 Git</small></span><span class="tag">READ</span>
+            </label>
+            <label class="permission">
+              <input type="radio" name="permission" value="edit">
+              <span class="radio-mark"></span><span class="permission-symbol edit-symbol"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#pencil"></use></svg></span>
+              <span class="permission-copy"><b>允许编辑</b><small>在只读基础上修改文件</small></span><span class="tag">WRITE</span>
+            </label>
+            <label class="permission">
+              <input type="radio" name="permission" value="dev" checked>
+              <span class="radio-mark"></span><span class="permission-symbol dev-symbol"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#terminal"></use></svg></span>
+              <span class="permission-copy"><b>开发模式</b><small>命令、长任务与 Git 提交</small></span><span class="tag">DEV</span>
+            </label>
+          </div>
+          <div class="dev-notice" id="devNotice"><span class="notice-icon"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#alert-triangle"></use></svg></span><p><b>开发模式会运行本机命令</b><br>命令以当前 Windows 用户权限执行。只连接你信任的项目。</p></div>
+        </section>
+
+        <section class="card tunnel-mode-card">
+          <div class="section-head">
+            <div class="step-number">03</div>
+            <div><h3>选择公网连接方式</h3><p>固定地址由你的服务器提供，重启后沿用同一个 MCP 地址</p></div>
+          </div>
+          <div class="connection-options">
+            <label class="connection-option"><input type="radio" name="connectionMode" value="quick" checked><span class="connection-mark"></span><span class="connection-copy"><b>临时 HTTPS 地址</b><small>无需配置服务器；每次连接会生成新地址</small></span><span class="connection-tag">QUICK</span></label>
+            <label class="connection-option"><input type="radio" name="connectionMode" value="selfHosted"><span class="connection-mark"></span><span class="connection-copy"><b>自有服务器固定地址</b><small>通过 SSH 反向转发复用同一个 HTTPS 地址</small></span><span class="connection-tag">STABLE</span></label>
+          </div>
+          <div id="serverConfig" class="server-config hidden">
+            <div class="server-fields">
+              <label class="server-field"><span>SSH 服务器</span><input id="serverHost" type="text" placeholder="服务器 IP 或主机名" spellcheck="false" autocomplete="off"></label>
+              <label class="server-field"><span>HTTPS 公网地址</span><input id="publicBaseUrl" type="url" placeholder="https://mcp.example.com" spellcheck="false" autocomplete="off"></label>
+              <label class="server-field"><span>SSH 用户</span><input id="serverUser" type="text" placeholder="localmcp" spellcheck="false" autocomplete="off"></label>
+              <label class="server-field"><span>SSH 端口</span><input id="serverPort" type="number" min="1" max="65535" value="22"></label>
+              <label class="server-field server-field-wide"><span>SSH 主机指纹</span><div class="fingerprint-row"><input id="serverFingerprint" type="text" placeholder="点击读取并核对 SHA256 指纹" spellcheck="false" autocomplete="off"><button class="btn secondary" id="probeServerBtn">读取指纹</button></div></label>
+            </div>
+            <div class="server-key-panel">
+              <div class="server-key-title"><div><b>本机专用 SSH 公钥</b><small>只允许服务器反向转发；私钥留在本机用户目录</small></div><button class="btn secondary" id="copyServerKeyBtn">复制公钥</button></div>
+              <textarea id="serverPublicKey" rows="2" readonly spellcheck="false" aria-label="SSH 公钥"></textarea>
+            </div>
+            <div class="server-config-foot"><span><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#info"></use></svg></span><p>服务器需允许 SSH 反向转发，并由 Nginx / Caddy 将 HTTPS 请求转发到 127.0.0.1:43128。固定 IP 可使用自动续期证书；服务器部署说明见随包 README。</p></div>
+            <div class="server-save-row"><span id="serverConfigHint" class="server-config-hint">保存后首次部署时，将公钥加入服务器的 localmcp 用户。</span><button class="btn secondary" id="saveServerConfigBtn">保存服务器设置</button></div>
+          </div>
+        </section>
+
+        <div class="actions">
+          <button class="btn primary" id="connectBtn"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#arrow-up-right"></use></svg>启动安全连接</button>
+          <button class="btn danger hidden" id="stopBtn"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#square"></use></svg>停止连接</button>
+          <span class="action-hint" id="actionHint"><i></i>创建临时 HTTPS 隧道，不需要配置域名</span>
+        </div>
+
+        <section class="card endpoint-card">
+          <div class="section-head endpoint-head">
+            <div class="step-number">04</div>
+            <div><h3>连接到 ChatGPT</h3><p>复制 MCP 地址，在 ChatGPT 中添加自定义应用</p></div>
+            <a class="text-link" href="https://chatgpt.com/plugins" target="_blank" rel="noreferrer">打开 ChatGPT <svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#external-link"></use></svg></a>
+          </div>
+          <div class="endpoint-row">
+            <span class="endpoint-lock" aria-hidden="true"><svg class="ui-icon"><use href="/icons.svg#lock"></use></svg></span>
+            <input id="mcpUrl" readonly placeholder="连接成功后，MCP 地址会显示在这里" aria-label="MCP 连接地址">
+            <button class="btn copy" id="copyBtn" disabled><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#copy"></use></svg>复制地址</button>
+          </div>
+          <div class="url-warning"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#shield-alert"></use></svg><span>地址含访问令牌，请勿公开分享。自有服务器模式下地址固定；断开时服务暂不可用，重连后恢复。</span></div>
+          <div class="stable-link-actions hidden" id="stableLinkActions"><span>需要撤销旧地址时可轮换令牌；重置后 ChatGPT 中的旧连接将失效。</span><button class="btn secondary" id="resetLinkBtn">重置固定链接</button></div>
+          <div class="steps">
+            <button id="stepsToggle" class="steps-toggle"><svg class="ui-icon chevron" aria-hidden="true"><use href="/icons.svg#chevron-down"></use></svg> ChatGPT 网页端配置步骤</button>
+            <ol id="stepsList">
+              <li>在设置中开启开发者模式（可用性取决于账号方案和工作区策略）。</li>
+              <li>进入 Apps / Plugins，选择创建自定义 MCP 应用。</li>
+              <li>粘贴完整地址并扫描工具，再按需要启用权限。</li>
+              <li>在新对话中选择该应用即可开始使用。</li>
+            </ol>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side-column">
+        <section class="card capabilities">
+          <div class="aside-title"><div><span class="aside-kicker">AVAILABLE TOOLS</span><h3>本次开放工具</h3></div><span class="live-indicator"><i></i> LIVE</span></div>
+          <div id="toolList" class="tool-list"></div>
+          <div class="tool-foot"><span><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#arrow-right"></use></svg></span><p>工具列表随权限档位变化。断开后公网 MCP 暂不可用，固定地址重连后恢复。</p></div>
+        </section>
+        <section class="card logs-card">
+          <div class="logs-head"><div><span class="aside-kicker">ACTIVITY</span><h3>连接活动</h3></div><button id="clearLogs" class="icon-btn" title="清空日志" aria-label="清空日志"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#refresh"></use></svg></button></div>
+          <div id="logs" class="logs" aria-live="polite"><div class="empty-log"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#paw"></use></svg><b>等待连接</b><small>连接状态和工具调用会显示在这里</small></div></div>
+        </section>
+        <div class="privacy-note"><span class="privacy-icon"><svg class="ui-icon" aria-hidden="true"><use href="/icons.svg#shield-check"></use></svg></span><p><b>本机运行，按需传输</b><br>MCP 请求经当前选择的公网转发链路传输。</p></div>
+      </aside>
+    </div>
+
+  <footer><span>LOCAL MCP STUDIO <b>0.1.14</b></span><span>PRIVATE BY DEFAULT <i>·</i> SESSION SCOPED</span></footer>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
